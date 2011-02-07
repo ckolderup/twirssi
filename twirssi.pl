@@ -2340,6 +2340,20 @@ if ( &window() ) {
         }
     );
     Irssi::command_bind(
+        "twitter_fav",
+        &gen_cmd(
+            "/twitter_fav <username:id>",
+            "create_favorite",
+            sub { &notice( ["tweet"], "Tweet starred." ); },
+            sub {
+                my ( $nick, $num ) = split /:/, lc $_[0], 2;
+                $num = $state{__last_tweet}{ &normalize_username($nick) }
+                  unless ( defined $num );
+                return $state{$nick}[$num];
+            }
+        )
+    );
+    Irssi::command_bind(
         "twitter_delete",
         &gen_cmd(
             "/twitter_delete <username:id>",
