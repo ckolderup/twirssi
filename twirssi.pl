@@ -1960,7 +1960,7 @@ sub sig_complete {
 
     if (
         $linestart =~
-        m{^/twitter_delete\s*$|^/(?:retweet|twitter_reply)(?:_as)?\s*$}
+        m{^/twitter_delete\s*$|^/twitter_get_url\s*$|^/twitter_fav\s*$|^/(?:retweet|twitter_reply)(?:_as)?\s*$}
         or (    $settings{use_reply_aliases}
             and $linestart =~ /^\/reply(?:_as)?\s*$/ )
       )
