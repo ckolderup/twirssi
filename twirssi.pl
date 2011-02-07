@@ -402,6 +402,31 @@ sub cmd_reply_as {
         "Update sent" . ( $away ? " (and away msg set)" : "" ) );
 }
 
+sub cmd_get_url {
+    my ( $data, $server, $win ) = @_;
+
+    return unless &logged_in($twit);
+
+    my $nick;
+    my $id = $data;
+    $id =~ s/[^\w\d-:]+//g;
+    ( $nick, $id ) = split /:/, $id;
+    unless ( exists $state{ lc $nick } ) {
+      &notice( [ "tweet" ],
+        "Can't find a tweet from $nick to get a URL for!" );
+      return;
+    }
+
+    $id = $state{__indexes}{$nick} unless $id;
+    unless ( $state{ lc $nick }[$id] ) {
+      &notice( [ "tweet" ],
+        "Can't find a tweet numbered $id from $nick to get a URL for!" );
+      return;
+    }
+
+    &notice( [ "tweet" ], "URL: http://www.twitter.com/$nick/status/$state{ lc $nick}[$id]" );
+}
+
 sub gen_cmd {
     my ( $usage_str, $api_name, $post_ref, $data_ref ) = @_;
 
@@ -1100,7 +1125,7 @@ sub load_friends {
             print $fh "type:debug Loading friends page $page...\n"
               if ( $fh and &debug );
             my $friends;
-            if ( ref $twit =~ /^Net::Twitter/ ) {
+            if ( ref($twit) =~ /^Net::Twitter/ ) {
                 $friends = $twit->friends( { cursor => $cursor } );
                 last unless $friends;
                 $cursor  = $friends->{next_cursor};
@@ -2278,6 +2303,7 @@ if ( &window() ) {
     Irssi::command_bind( "twitter_broadcast",          "cmd_broadcast" );
     Irssi::command_bind( "twitter_reply",              "cmd_reply" );
     Irssi::command_bind( "twitter_reply_as",           "cmd_reply_as" );
+    Irssi::command_bind( "twitter_get_url",            "cmd_get_url" );
     Irssi::command_bind( "twitter_login",              "cmd_login" );
     Irssi::command_bind( "twitter_logout",             "cmd_logout" );
     Irssi::command_bind( "twitter_search",             "cmd_search" );
